@@ -1,0 +1,14 @@
+<nav class="nav flex-column">
+  <a class="nav-link {% if current == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+  <div class="nav-section">INVESTIGATION</div>
+  <a class="nav-link {% if current == 'case_list' or current == 'case_detail' or current == 'case_create' %}active{% endif %}" href="{% url 'case_list' %}"><i class="bi bi-folder2-open"></i> Cases</a>
+  <a class="nav-link {% if current == 'evidence_list' or current == 'evidence_detail' %}active{% endif %}" href="{% url 'evidence_list' %}"><i class="bi bi-file-earmark-lock"></i> Evidence</a>
+  <a class="nav-link {% if current == 'evidence_register' %}active{% endif %}" href="{% url 'evidence_register' %}"><i class="bi bi-cloud-upload"></i> Register evidence</a>
+  <a class="nav-link {% if current == 'custody_add' or current == 'custody_history' %}active{% endif %}" href="{% url 'custody_add' %}"><i class="bi bi-arrow-left-right"></i> Custody event</a>
+  <div class="nav-section">INTEGRITY</div>
+  <a class="nav-link {% if current == 'verify' %}active{% endif %}" href="{% url 'verify' %}"><i class="bi bi-patch-check"></i> Verify evidence</a>
+  <a class="nav-link {% if current == 'ledger' %}active{% endif %}" href="{% url 'ledger' %}"><i class="bi bi-link-45deg"></i> Blockchain ledger</a>
+  <a class="nav-link {% if current == 'tamper_demo' %}active{% endif %}" href="{% url 'tamper_demo' %}"><i class="bi bi-bug"></i> Tamper demo (safe)</a>
+  <div class="nav-section">OUTPUT</div>
+  <a class="nav-link {% if current == 'report_home' %}active{% endif %}" href="{% url 'report_home' %}"><i class="bi bi-file-earmark-pdf"></i> PDF reports</a>
+</nav>

@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% load forensic_tags %}
+{% block title %}Blockchain ledger{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Blockchain ledger</h1><p class="subtitle">Every custody event is one hash-linked block. Hashes are recalculated on each page load.</p></div>
+  <a class="btn btn-outline-primary" href="{% url 'ledger' %}"><i class="bi bi-arrow-repeat"></i> Re-run validation</a></div>
+{% if result.is_valid %}
+<div class="result-banner result-success mb-3"><i class="bi bi-check-circle"></i><div><h2>BLOCKCHAIN VALID</h2><div>{{ result.message }} Validated {{ result.checked_at }}.</div></div></div>
+{% else %}
+<div class="result-banner result-danger mb-3"><i class="bi bi-exclamation-octagon"></i><div><h2>BLOCKCHAIN INVALID</h2><div>{{ result.message }}</div>
+  <ul class="mb-0 mt-2">{% for problem in result.all_problems %}<li>{{ problem }}</li>{% endfor %}</ul></div></div>
+{% endif %}
+<div class="callout mb-3">This is a local, application-level blockchain prototype. It is <strong>tamper-evident, not tamper-proof</strong>: someone who can rewrite every block and the database could rebuild a valid-looking chain.</div>
+<div class="card">
+  {% if page %}<div class="table-responsive"><table class="table table-hover"><thead><tr><th>Block</th><th>Timestamp (UTC)</th><th>Evidence</th><th>Event</th><th>Actor</th><th>Previous hash</th><th>Hash</th><th>Status</th></tr></thead><tbody>
+  {% for row in page %}<tr>
+    <td><strong>#{{ row.block.index }}</strong></td><td class="small">{{ row.block.timestamp|slice:":19" }}</td><td>{{ row.block.evidence_id }}</td><td>{{ row.block.event_type }}</td><td>{{ row.block.actor }}</td>
+    <td class="hash" title="{{ row.block.previous_hash }}">{{ row.block.previous_hash|short_hash:12 }}</td><td class="hash" title="{{ row.block.hash }}">{{ row.block.hash|short_hash:12 }}</td>
+    <td>{% if row.check.is_valid %}<span class="status-badge status-success">VALID</span>{% else %}<span class="status-badge status-danger" title="{% for p in row.check.problems %}{{ p }}. {% endfor %}">INVALID</span>{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>{% include "partials/_pagination.html" %}
+  {% else %}<div class="empty-state"><i class="bi bi-link-45deg"></i><p class="mt-2 mb-0">The ledger has no blocks yet. Run <code>python manage.py migrate</code> to create the genesis block.</p></div>{% endif %}
+</div>
+{% endblock %}

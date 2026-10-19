@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% load forensic_tags %}
+{% block title %}{{ evidence.evidence_id }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>{{ evidence.evidence_id }}</h1><p class="subtitle">{{ evidence.original_filename }} &nbsp; {% include "partials/_badge.html" with code=evidence.status label=evidence.get_status_display %}</p></div>
+  <div class="d-flex flex-wrap gap-2"><a class="btn btn-outline-primary" href="{% url 'custody_add' %}?evidence={{ evidence.evidence_id }}"><i class="bi bi-arrow-left-right"></i> Record custody event</a>
+  <a class="btn btn-outline-primary" href="{% url 'verify' %}?evidence={{ evidence.evidence_id }}"><i class="bi bi-patch-check"></i> Verify</a>
+  <a class="btn btn-primary" href="{% url 'generate_report' %}?evidence={{ evidence.evidence_id }}"><i class="bi bi-file-earmark-pdf"></i> PDF report</a></div></div>
+<div class="row g-3 mb-3">
+  <div class="col-lg-7"><div class="card h-100"><div class="card-header">Metadata</div><div class="card-body"><dl class="row mb-0">
+    <dt class="col-sm-4">Case</dt><dd class="col-sm-8"><a href="{% url 'case_detail' evidence.case.case_id %}">{{ evidence.case.case_id }}</a> - {{ evidence.case.title }}</dd>
+    <dt class="col-sm-4">File type</dt><dd class="col-sm-8">.{{ evidence.file_extension }}</dd>
+    <dt class="col-sm-4">File size</dt><dd class="col-sm-8">{{ evidence.file_size|filesizeformat }} ({{ evidence.file_size }} bytes)</dd>
+    <dt class="col-sm-4">Registered by</dt><dd class="col-sm-8">{{ evidence.registered_by.get_username }}</dd>
+    <dt class="col-sm-4">Registered at</dt><dd class="col-sm-8">{{ evidence.registered_at }}</dd>
+    <dt class="col-sm-4">Notes</dt><dd class="col-sm-8">{{ evidence.notes|default:"-"|linebreaksbr }}</dd></dl></div></div></div>
+  <div class="col-lg-5"><div class="card h-100"><div class="card-header">Integrity</div><div class="card-body">
+    <div class="form-label">Original SHA-256 (never changed)</div><div class="hash-box hash mb-3">{{ evidence.sha256_hash }}</div>
+    <div class="form-label">Latest verification</div>
+    {% if latest_verification %}{% include "partials/_badge.html" with code=latest_verification.result label=latest_verification.get_result_display %}<div class="text-muted small mt-1">{{ latest_verification.verified_at }} by {{ latest_verification.verified_by.get_username }} ({{ verification_count }} run{{ verification_count|pluralize }})</div>
+    {% else %}<div class="text-muted">Not verified yet.</div>{% endif %}</div></div></div>
+</div>
+<div class="card"><div class="card-header">Custody events <a class="btn btn-sm btn-outline-secondary" href="{% url 'custody_history' evidence.evidence_id %}">Full history</a></div>
+  <div class="table-responsive"><table class="table"><thead><tr><th>Time</th><th>Action</th><th>Performed by</th><th>Block</th></tr></thead><tbody>
+  {% for event in events %}<tr><td class="small">{{ event.timestamp }}</td><td>{{ event.get_action_type_display }}</td><td>{{ event.handler_name }}</td><td>{% if event.block_record %}#{{ event.block_record.block_index }}{% else %}-{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div></div>
+{% endblock %}

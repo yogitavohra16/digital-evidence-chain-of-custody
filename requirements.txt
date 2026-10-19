@@ -1,0 +1,10 @@
+# Tested with Python 3.13.13 (Django 5.2 LTS officially supports Python 3.13).
+# Direct dependencies:
+Django==5.2.18
+reportlab==5.0.1
+
+# Transitive dependencies, pinned to the versions the tests were run with:
+asgiref==3.12.1
+sqlparse==0.6.0
+pillow==12.3.0
+charset-normalizer==3.5.2

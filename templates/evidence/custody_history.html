@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% load forensic_tags %}
+{% block title %}Custody history {{ evidence.evidence_id }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Chain of custody: {{ evidence.evidence_id }}</h1><p class="subtitle">{{ evidence.original_filename }} - {{ evidence.case.case_id }} &nbsp; {% include "partials/_badge.html" with code=evidence.status label=evidence.get_status_display %}</p></div>
+  <div class="d-flex gap-2"><a class="btn btn-outline-secondary" href="{% url 'evidence_detail' evidence.evidence_id %}">Evidence details</a>
+  {% if evidence.status != 'ARCHIVED' %}<a class="btn btn-primary" href="{% url 'custody_add' %}?evidence={{ evidence.evidence_id }}"><i class="bi bi-plus-lg"></i> Record event</a>{% endif %}</div></div>
+<div class="card"><div class="card-header">Events, oldest first</div>
+  {% if events %}<div class="table-responsive"><table class="table table-hover"><thead><tr><th>#</th><th>Time</th><th>Action</th><th>Performed by</th><th>From &rarr; To</th><th>Remarks</th><th>Block</th><th>Block hash</th></tr></thead><tbody>
+  {% for event in events %}<tr><td>{{ forloop.counter }}</td><td class="small">{{ event.timestamp }}</td><td>{{ event.get_action_type_display }}</td>
+    <td>{{ event.handler_name }}<div class="text-muted small">login: {{ event.recorded_by.get_username }}</div></td>
+    <td>{% if event.from_party or event.to_party %}{{ event.from_party|default:"-" }} &rarr; {{ event.to_party|default:"-" }}{% else %}-{% endif %}</td>
+    <td style="min-width:180px">{{ event.remarks|linebreaksbr }}</td>
+    <td>{% if event.block_record %}<a href="{% url 'ledger' %}">#{{ event.block_record.block_index }}</a>{% else %}-{% endif %}</td>
+    <td class="hash" title="{{ event.block_record.current_hash }}">{{ event.block_record.current_hash|short_hash:14 }}</td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<div class="empty-state"><i class="bi bi-clock-history"></i><p class="mt-2 mb-0">No custody events recorded.</p></div>{% endif %}</div>
+{% endblock %}

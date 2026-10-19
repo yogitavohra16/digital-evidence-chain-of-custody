@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Record custody event{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Record custody event</h1><p class="subtitle">Each event becomes a new block in the ledger. Events cannot be edited or deleted afterwards.</p></div></div>
+<div class="row g-3"><div class="col-lg-8"><div class="card"><div class="card-body">
+  <form method="post" novalidate data-once>{% csrf_token %}{% include "partials/_form_errors.html" %}
+    {% include "partials/_field.html" with field=form.evidence %}
+    {% include "partials/_field.html" with field=form.action_type %}
+    {% include "partials/_field.html" with field=form.handler_name %}
+    <div class="row"><div class="col-md-6">{% include "partials/_field.html" with field=form.from_party %}</div><div class="col-md-6">{% include "partials/_field.html" with field=form.to_party %}</div></div>
+    {% include "partials/_field.html" with field=form.remarks %}
+    <button class="btn btn-primary" type="submit">Record event</button> <a class="btn btn-outline-secondary" href="{% url 'evidence_list' %}">Cancel</a>
+  </form></div></div></div>
+  <div class="col-lg-4"><div class="callout"><strong>Rules</strong><ul class="mb-0 mt-2 ps-3"><li>Transfers need a different <em>From</em> and <em>To</em>.</li><li>Returns need a <em>To</em>.</li><li>Analysis must be started before it is completed.</li><li>Archived evidence accepts no further events.</li></ul>
+  <p class="mt-2 mb-0">The time is recorded by the server. Your login name is saved too; a typed name does not prove real-world identity.</p></div></div></div>
+{% endblock %}

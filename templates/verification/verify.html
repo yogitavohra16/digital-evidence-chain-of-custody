@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% load forensic_tags %}
+{% block title %}Verify evidence{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Evidence integrity verification</h1><p class="subtitle">Re-hash the stored file and compare it with the original SHA-256 recorded at registration.</p></div></div>
+<div class="card mb-3"><div class="card-body"><form method="post" class="row g-2 align-items-end" data-once>{% csrf_token %}
+  <div class="col-md-8">{{ form.evidence.label_tag }}{{ form.evidence }}{% for error in form.evidence.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+  <div class="col-md-4"><button class="btn btn-primary" type="submit"><i class="bi bi-patch-check"></i> Verify now</button></div></form></div></div>
+{% if record %}
+  {% if record.result == 'MATCH' %}<div class="result-banner result-success mb-3"><i class="bi bi-check-circle"></i><div><h2>INTEGRITY VERIFIED</h2><div>The current file hash matches the original registered hash.</div></div></div>
+  {% elif record.result == 'MISMATCH' %}<div class="result-banner result-danger mb-3"><i class="bi bi-x-octagon"></i><div><h2>INTEGRITY MISMATCH</h2><div>The file content differs from the registered version. This does not by itself prove malicious tampering - investigate the cause.</div></div></div>
+  {% elif record.result == 'FILE_MISSING' %}<div class="result-banner result-danger mb-3"><i class="bi bi-file-earmark-x"></i><div><h2>FILE MISSING</h2><div>{{ record.error_details }}</div></div></div>
+  {% else %}<div class="result-banner result-warning mb-3"><i class="bi bi-exclamation-triangle"></i><div><h2>VERIFICATION ERROR</h2><div>{{ record.error_details }}</div></div></div>{% endif %}
+  <div class="card mb-3"><div class="card-header">{{ record.evidence.evidence_id }} - {{ record.evidence.original_filename }}</div><div class="card-body">
+    <div class="form-label">Original SHA-256 (registered {{ record.evidence.registered_at }})</div><div class="hash-box hash mb-3">{{ record.original_hash }}</div>
+    <div class="form-label">Current SHA-256 (calculated {{ record.verified_at }})</div><div class="hash-box hash">{{ record.current_hash|default:"Not available" }}</div></div></div>
+{% endif %}
+<div class="card"><div class="card-header">Verification history{% if filtered_by %} for {{ filtered_by }}{% endif %}{% if filtered_by %}<a class="btn btn-sm btn-outline-secondary" href="{% url 'verify' %}">Show all</a>{% endif %}</div>
+  {% if history %}<div class="table-responsive"><table class="table"><thead><tr><th>Time</th><th>Evidence</th><th>Result</th><th>By</th><th>Current hash</th></tr></thead><tbody>
+  {% for item in history %}<tr><td class="small">{{ item.verified_at }}</td><td><a href="{% url 'evidence_detail' item.evidence.evidence_id %}">{{ item.evidence.evidence_id }}</a></td><td>{% include "partials/_badge.html" with code=item.result label=item.get_result_display %}</td><td>{{ item.verified_by.get_username }}</td><td class="hash" title="{{ item.current_hash }}">{{ item.current_hash|short_hash:14|default:"-" }}</td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<div class="empty-state"><i class="bi bi-patch-check"></i><p class="mt-2 mb-0">No verifications have been run yet.</p></div>{% endif %}</div>
+{% endblock %}

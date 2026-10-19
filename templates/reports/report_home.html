@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}PDF reports{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>PDF reports</h1><p class="subtitle">Generate a chain-of-custody report from the current database records.</p></div></div>
+<div class="row g-3"><div class="col-lg-7"><div class="card"><div class="card-body">
+  {% if evidence_items %}
+  <form method="get" action="{% url 'generate_report' %}">
+    <div class="mb-3"><label class="form-label" for="evidence">Evidence item</label>
+      <select class="form-select" id="evidence" name="evidence" required><option value="">Select evidence</option>
+      {% for item in evidence_items %}<option value="{{ item.evidence_id }}" {% if item.evidence_id == selected %}selected{% endif %}>{{ item.evidence_id }} - {{ item.original_filename }} ({{ item.case.case_id }})</option>{% endfor %}</select></div>
+    <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="verify_now" value="1" id="verify_now" checked><label class="form-check-label" for="verify_now">Run a fresh integrity verification first (recommended)</label></div>
+    <button class="btn btn-primary" type="submit"><i class="bi bi-download"></i> Generate PDF report</button>
+  </form>
+  {% else %}<div class="empty-state"><i class="bi bi-file-earmark-pdf"></i><p class="mt-2 mb-0">Register evidence first - reports are built from real evidence records.</p></div>{% endif %}
+</div></div></div>
+<div class="col-lg-5"><div class="callout"><strong>The report contains</strong><ul class="mb-0 mt-2 ps-3"><li>Case and evidence metadata</li><li>Original SHA-256 hash</li><li>Chronological custody history with block numbers and hashes</li><li>Latest verification result</li><li>Blockchain validation result and time</li></ul>
+<p class="mt-2 mb-0">The report is a summary of this prototype's data and does not guarantee legal admissibility.</p></div></div></div>
+{% endblock %}

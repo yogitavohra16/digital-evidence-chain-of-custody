@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% load forensic_tags %}
+{% block title %}Tamper demo{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Tamper detection demo <span class="status-badge status-info align-middle">TEST / DEMO</span></h1>
+  <p class="subtitle">Uses a synthetic chain held in memory. Your real evidence and ledger are never touched.</p></div></div>
+<div class="card mb-3"><div class="card-body">
+  {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+  <form method="post" class="row g-3 align-items-end">{% csrf_token %}
+    <div class="col-md-5"><label class="form-label" for="scenario">Attack scenario</label><select class="form-select" id="scenario" name="scenario">{% for key, label in scenarios %}<option value="{{ key }}" {% if demo.scenario == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div class="col-md-3"><label class="form-label" for="block_index">Block to tamper with</label><select class="form-select" id="block_index" name="block_index">{% for number in "1234" %}<option value="{{ number }}" {% if demo.block_index|stringformat:"s" == number %}selected{% endif %}>Block #{{ number }}</option>{% endfor %}</select></div>
+    <div class="col-md-4"><div class="form-check mb-2"><input class="form-check-input" type="checkbox" name="confirm" value="yes" id="confirm"><label class="form-check-label" for="confirm">I understand this only changes a temporary in-memory copy of demo data.</label></div>
+    <button class="btn btn-primary" type="submit">Run demonstration</button></div></form></div></div>
+{% if demo %}
+<div class="result-banner result-success mb-3"><i class="bi bi-check-circle"></i><div><h2>1. Original synthetic chain</h2><div>{{ demo.original_result.message }}</div></div></div>
+<div class="result-banner {% if demo.tampered_result.is_valid %}result-warning{% else %}result-danger{% endif %} mb-3"><i class="bi bi-exclamation-octagon"></i><div><h2>2. After tampering ({{ demo.scenario_label }}, block #{{ demo.block_index }})</h2><div>{{ demo.tampered_result.message }}</div>
+  <ul class="mb-0 mt-1">{% for problem in demo.tampered_result.all_problems %}<li>{{ problem }}</li>{% endfor %}</ul></div></div>
+<div class="callout mb-3"><strong>Explanation:</strong> {{ demo.explanation }}</div>
+<div class="card"><div class="card-header">Tampered copy, block by block</div><div class="table-responsive"><table class="table"><thead><tr><th>Block</th><th>Event</th><th>Actor</th><th>Previous hash</th><th>Stored hash</th><th>Result</th></tr></thead><tbody>
+{% for block in demo.tampered_blocks %}<tr><td>#{{ block.index }}</td><td>{{ block.event_type }}</td><td>{{ block.actor }}</td><td class="hash">{{ block.previous_hash|short_hash:12 }}</td><td class="hash">{{ block.hash|short_hash:12 }}</td>
+<td>{% for check in demo.tampered_result.block_checks %}{% if check.index == block.index %}{% if check.is_valid %}<span class="status-badge status-success">VALID</span>{% else %}<span class="status-badge status-danger">INVALID</span> <span class="small">{{ check.problems|join:"; " }}</span>{% endif %}{% endif %}{% endfor %}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endif %}
+{% endblock %}

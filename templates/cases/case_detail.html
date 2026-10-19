@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% load forensic_tags %}
+{% block title %}{{ case.case_id }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>{{ case.case_id }} - {{ case.title }}</h1>
+  <p class="subtitle">{% include "partials/_badge.html" with code=case.status label=case.get_status_display %} &nbsp; Created {{ case.created_at }} by {{ case.created_by.get_username }}</p></div>
+  <div class="d-flex gap-2"><a class="btn btn-outline-secondary" href="{% url 'case_list' %}">All cases</a>
+  {% if case.status != 'CLOSED' %}<a class="btn btn-primary" href="{% url 'evidence_register' %}?case={{ case.case_id }}"><i class="bi bi-cloud-upload"></i> Add evidence</a>{% endif %}</div></div>
+<div class="card mb-3"><div class="card-header">Description</div><div class="card-body">{{ case.description|default:"No description provided."|linebreaksbr }}</div></div>
+<div class="card mb-3"><div class="card-header">Evidence in this case ({{ evidence_items|length }})</div>
+  {% if evidence_items %}<div class="table-responsive"><table class="table table-hover"><thead><tr><th>Evidence</th><th>File</th><th>Size</th><th>SHA-256</th><th>Status</th></tr></thead><tbody>
+    {% for item in evidence_items %}<tr><td><a href="{% url 'evidence_detail' item.evidence_id %}"><strong>{{ item.evidence_id }}</strong></a></td><td>{{ item.original_filename }}</td><td>{{ item.file_size|filesizeformat }}</td>
+      <td class="hash" title="{{ item.sha256_hash }}">{{ item.sha256_hash|short_hash:16 }}</td><td>{% include "partials/_badge.html" with code=item.status label=item.get_status_display %}</td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<div class="empty-state"><i class="bi bi-inbox"></i><p class="mt-2 mb-0">No evidence registered for this case yet.</p></div>{% endif %}</div>
+<div class="card"><div class="card-header">Custody history for the whole case</div>
+  {% if events %}<div class="table-responsive"><table class="table table-hover"><thead><tr><th>Time</th><th>Evidence</th><th>Action</th><th>Performed by</th><th>Block</th></tr></thead><tbody>
+    {% for event in events %}<tr><td class="small">{{ event.timestamp }}</td><td><a href="{% url 'custody_history' event.evidence.evidence_id %}">{{ event.evidence.evidence_id }}</a></td><td>{{ event.get_action_type_display }}</td><td>{{ event.handler_name }}</td><td>{% if event.block_record %}#{{ event.block_record.block_index }}{% else %}-{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<div class="empty-state"><i class="bi bi-clock-history"></i><p class="mt-2 mb-0">No custody events yet.</p></div>{% endif %}</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Register evidence{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Register evidence</h1><p class="subtitle">The SHA-256 hash is calculated automatically from the file's bytes.</p></div></div>
+<div class="row g-3"><div class="col-lg-8"><div class="card"><div class="card-body">
+  {% if not form.fields.case.queryset.exists %}<div class="alert alert-warning">You need an open case first. <a href="{% url 'case_create' %}" class="alert-link">Create a case</a>.</div>{% endif %}
+  <form method="post" enctype="multipart/form-data" novalidate data-once>{% csrf_token %}{% include "partials/_form_errors.html" %}
+    {% include "partials/_field.html" with field=form.case %}
+    {% include "partials/_field.html" with field=form.evidence_file %}
+    {% include "partials/_field.html" with field=form.handler_name %}
+    {% include "partials/_field.html" with field=form.notes %}
+    <button class="btn btn-primary" type="submit">Register and hash evidence</button> <a class="btn btn-outline-secondary" href="{% url 'evidence_list' %}">Cancel</a>
+  </form></div></div></div>
+  <div class="col-lg-4"><div class="callout"><strong>What happens when you submit</strong><ol class="mb-0 mt-2 ps-3"><li>The file is hashed with SHA-256 in small chunks.</li><li>It is saved in a private folder under a random name.</li><li>Metadata goes into the database.</li><li>The first custody event and blockchain block are created.</li></ol>
+  <p class="mt-2 mb-0">Only the hash and metadata go into the blockchain - never the file itself.</p></div></div></div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% load forensic_tags %}
+{% block title %}Evidence{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Evidence</h1><p class="subtitle">Registered digital evidence items.</p></div>
+  <a class="btn btn-primary" href="{% url 'evidence_register' %}"><i class="bi bi-cloud-upload"></i> Register evidence</a></div>
+<div class="card mb-3"><div class="card-body"><form method="get" class="row g-2 align-items-end">
+  <div class="col-md-4"><label class="form-label" for="q">Evidence ID or filename</label><input class="form-control" id="q" name="q" value="{{ query }}" placeholder="e.g. EV-0001"></div>
+  <div class="col-md-3"><label class="form-label" for="case">Case</label><select class="form-select" id="case" name="case"><option value="">All cases</option>{% for case in cases %}<option value="{{ case.case_id }}" {% if case.case_id == case_id %}selected{% endif %}>{{ case.case_id }}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><label class="form-label" for="status">Status</label><select class="form-select" id="status" name="status"><option value="">All</option>{% for value, label in status_choices %}<option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+  <div class="col-md-3 d-flex gap-2"><button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> Filter</button><a class="btn btn-outline-secondary" href="{% url 'evidence_list' %}">Reset</a></div></form></div></div>
+<div class="card">
+  {% if page %}<div class="table-responsive"><table class="table table-hover"><thead><tr><th>Evidence ID</th><th>Case</th><th>File</th><th>Size</th><th>SHA-256</th><th>Status</th><th>Registered</th></tr></thead><tbody>
+    {% for item in page %}<tr><td><a href="{% url 'evidence_detail' item.evidence_id %}"><strong>{{ item.evidence_id }}</strong></a></td><td><a href="{% url 'case_detail' item.case.case_id %}">{{ item.case.case_id }}</a></td>
+      <td>{{ item.original_filename }}</td><td>{{ item.file_size|filesizeformat }}</td><td class="hash" title="{{ item.sha256_hash }}">{{ item.sha256_hash|short_hash:14 }}</td>
+      <td>{% include "partials/_badge.html" with code=item.status label=item.get_status_display %}</td><td class="small">{{ item.registered_at }}</td></tr>{% endfor %}
+  </tbody></table></div>{% include "partials/_pagination.html" %}
+  {% else %}<div class="empty-state"><i class="bi bi-inbox"></i><p class="mt-2 mb-2">{% if query or status or case_id %}No evidence matches your filters.{% else %}No evidence registered yet.{% endif %}</p></div>{% endif %}
+</div>
+{% endblock %}

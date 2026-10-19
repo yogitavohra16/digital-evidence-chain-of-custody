@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}New case{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Create case</h1><p class="subtitle">The Case ID (CASE-0001, CASE-0002 ...) is generated automatically.</p></div></div>
+<div class="card" style="max-width:720px"><div class="card-body">
+  <form method="post" novalidate>{% csrf_token %}{% include "partials/_form_errors.html" %}
+    {% include "partials/_field.html" with field=form.title %}
+    {% include "partials/_field.html" with field=form.description %}
+    {% include "partials/_field.html" with field=form.status %}
+    <button class="btn btn-primary" type="submit">Create case</button> <a class="btn btn-outline-secondary" href="{% url 'case_list' %}">Cancel</a>
+  </form></div></div>
+{% endblock %}

@@ -1,0 +1,33 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Database (may contain case data and password hashes)
+db.sqlite3
+*.sqlite3
+*.sqlite3-journal
+
+# Uploaded evidence files (never commit evidence)
+private_evidence/
+media/
+
+# Secrets / local configuration
+.env
+.env.*
+!.env.example
+
+# Generated output
+generated_reports/
+*.log
+staticfiles/
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

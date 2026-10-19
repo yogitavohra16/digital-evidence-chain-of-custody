@@ -1,0 +1,58 @@
+{% load static forensic_tags %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Dashboard{% endblock %} | Evidence Chain of Custody</title>
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/bootstrap-icons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/forensic.css' %}">
+</head>
+<body>
+{% with current=request.resolver_match.url_name %}
+<div class="app-shell">
+  <aside class="sidebar d-none d-lg-block" aria-label="Main navigation">
+    <a class="brand" href="{% url 'dashboard' %}">
+      <span class="brand-mark"><i class="bi bi-shield-lock"></i></span>
+      <span class="brand-text">Evidence Custody<small>Forensic Violet console</small></span>
+    </a>
+    {% include "partials/_nav_links.html" %}
+  </aside>
+
+  <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="mobileNav" style="background:#172554 !important; width:260px">
+    <div class="offcanvas-header"><strong>Evidence Custody</strong>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>
+    <div class="offcanvas-body sidebar" style="position:static;height:auto;width:auto">{% include "partials/_nav_links.html" %}</div>
+  </div>
+
+  <div class="main-col">
+    <header class="topbar">
+      <button class="btn btn-outline-secondary btn-sm mobile-nav-toggle" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-label="Open menu"><i class="bi bi-list"></i></button>
+      <span class="project-name">Blockchain-Based Digital Evidence Chain of Custody</span>
+      <div class="user-chip">
+        <span><i class="bi bi-person-circle"></i> {{ request.user.get_username }}</span>
+        <form method="post" action="{% url 'logout' %}" class="m-0">{% csrf_token %}
+          <button type="submit" class="btn btn-outline-secondary btn-sm"><i class="bi bi-box-arrow-right"></i> Log out</button>
+        </form>
+      </div>
+    </header>
+
+    <main class="content">
+      {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
+          {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="app-footer">
+      Academic minor-project prototype - local, application-level blockchain. Not a certified forensic evidence vault; makes no claim of legal admissibility.
+    </footer>
+  </div>
+</div>
+{% endwith %}
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

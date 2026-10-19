@@ -1,0 +1,7 @@
+SYNTHETIC DEMONSTRATION FILE - NOT REAL EVIDENCE
+=================================================
+This file was written only to demonstrate the Blockchain-Based Digital Evidence
+Chain of Custody System. It contains no personal, private or sensitive data.
+
+Imaginary scenario: "Investigator A" found this note on a demonstration USB drive.
+Register it in the application, record a few custody events, then verify it.
