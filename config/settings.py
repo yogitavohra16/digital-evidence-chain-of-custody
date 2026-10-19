@@ -65,8 +65,9 @@ INSTALLED_APPS = [
 # Middleware = small steps every request passes through. CsrfViewMiddleware keeps
 # CSRF protection enabled for every POST form.
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -137,9 +138,22 @@ DATE_FORMAT = "d M Y"
 # ---------------------------------------------------------------------------
 # Static files (CSS / JS / vendored Bootstrap)
 # ---------------------------------------------------------------------------
-STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_URL = "/static/"
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 # ---------------------------------------------------------------------------
 # Evidence file storage (PRIVATE)
 # ---------------------------------------------------------------------------
