@@ -37,12 +37,12 @@ SECRET_KEY = os.environ.get(
     "django-insecure-local-development-key-do-not-use-in-production",
 )
 
-DEBUG = _env_flag("DJANGO_DEBUG", True)
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
-    if host.strip()
+    "digital-evidence-chain-of-custody.onrender.com",
+    "localhost",
+    "127.0.0.1",
 ]
 
 # ---------------------------------------------------------------------------
