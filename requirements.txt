@@ -8,3 +8,4 @@ asgiref==3.12.1
 sqlparse==0.6.0
 pillow==12.3.0
 charset-normalizer==3.5.2
+gunicorn
